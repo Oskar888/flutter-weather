@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
+import './widgets/ActualWeather.dart';
+import './widgets/SearchBar.dart';
 
 void main() {
   runApp(const MyApp());
@@ -32,6 +34,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  TextEditingController cityNameController = TextEditingController();
+  String adress = '';
   String? _currentAddress;
   Position? _currentPosition;
   Future<bool> _handleLocationPermission() async {
@@ -63,26 +67,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return true;
   }
 
-  Future<void> _getCurrentPosition() async {
-    final hasPermission = await _handleLocationPermission();
-
-    if (!hasPermission) return;
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
-        .then((Position position) {
-      setState(() => _currentPosition = position);
-      _getAddressFromLatLng(_currentPosition!);
-    }).catchError((e) {
-      debugPrint(e);
-    });
-  }
-
   Future<void> _getAddressFromLatLng(Position position) async {
     await placemarkFromCoordinates(
             _currentPosition!.latitude, _currentPosition!.longitude)
         .then((List<Placemark> placemarks) {
       Placemark place = placemarks[0];
       setState(() {
-        _currentAddress = '${place.subAdministrativeArea}';
+        adress = _currentAddress = '${place.subAdministrativeArea}';
       });
     }).catchError((e) {
       debugPrint(e);
@@ -95,68 +86,83 @@ class _MyHomePageState extends State<MyHomePage> {
   String temp = '';
   String city = '';
 
-  Future<void> gettingDataFromApi() async {
+  Future<void> gettingLiveDataFromApiByGps() async {
+    final hasPermission = await _handleLocationPermission();
+
+    if (!hasPermission) return;
+    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+        .then((Position position) {
+      setState(() => _currentPosition = position);
+      _getAddressFromLatLng(_currentPosition!);
+    }).catchError((e) {
+      debugPrint(e);
+    });
+
     String url =
         'https://api.openweathermap.org/data/2.5/weather?lat=${_currentPosition?.latitude}&lon=${_currentPosition?.longitude}&appid=$apiKey&units=metric';
+
     await http
         .get(Uri.parse(url))
         .then((value) => data = jsonDecode(value.body));
 
     double temperatura = data['main']['temp'];
     setState(() {
-      temp = '${temperatura.toStringAsFixed(0)}*C';
+      temp = '${temperatura.toStringAsFixed(0)}°C';
+    });
+    city = adress;
+  }
+
+  Future<void> gettingLiveDataFromApiByCity() async {
+    city = cityNameController.text;
+
+    String url =
+        'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric';
+
+    await http
+        .get(Uri.parse(url))
+        .then((value) => data = jsonDecode(value.body));
+
+    double temperatura = data['main']['temp'];
+    setState(() {
+      temp = '${temperatura.toStringAsFixed(0)}°C';
+    });
+  }
+
+  Future<void> gettingForcecastDataFromApi() async {
+    String url =
+        'http://api.openweathermap.org/data/2.5/forecast?lat=${_currentPosition?.latitude}&lon=${_currentPosition?.longitude}&appid=$apiKey&units=metric';
+
+    await http
+        .get(Uri.parse(url))
+        .then((value) => data = jsonDecode(value.body));
+
+    double temperatura = data['main']['temp'];
+    setState(() {
+      temp = '${temperatura.toStringAsFixed(0)}°C';
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[400],
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
+      backgroundColor: const Color.fromARGB(255, 32, 131, 211),
       body: Column(
         children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.3,
+            height: MediaQuery.of(context).size.height * 0.15,
+          ),
+          SizedBox(
+              height: MediaQuery.of(context).size.height * 0.15,
+              child: Searchbar(cityNameController, gettingLiveDataFromApiByCity,
+                  gettingLiveDataFromApiByGps)),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.5,
             width: double.infinity,
-            child: Card(
-              margin: const EdgeInsets.all(5),
-              elevation: 15,
-              color: Colors.grey[500],
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  Text(
-                      style: const TextStyle(fontSize: 40),
-                      _currentAddress ?? ''),
-                  Container(
-                    child: data == null
-                        ? const Text('')
-                        : Image.network(
-                            'https://openweathermap.org/img/wn/${data['weather'][0]['icon']}@2x.png',
-                          ),
-                  ),
-                  Text(style: const TextStyle(fontSize: 20), temp),
-                  const SizedBox(height: 20),
-                ],
-              ),
-            ),
+            child: ActualWeather(city, data, temp),
           ),
-          Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                ElevatedButton(
-                    onPressed: _getCurrentPosition, child: const Text('GPS')),
-                ElevatedButton(
-                    onPressed: gettingDataFromApi, child: const Text('API'))
-              ],
-            ),
+          SizedBox(
+            height: MediaQuery.of(context).size.height * 0.2,
           ),
-          const SizedBox(
-            height: 60,
-          )
         ],
       ),
     );
