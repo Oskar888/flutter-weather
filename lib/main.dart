@@ -5,6 +5,7 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import './widgets/ActualWeather.dart';
 import './widgets/SearchBar.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,6 +20,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'WeatherApp',
       theme: ThemeData(
+        textTheme: GoogleFonts.latoTextTheme(),
         primarySwatch: Colors.blueGrey,
       ),
       home: const MyHomePage(title: 'WeatherApp'),
@@ -147,25 +149,36 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      backgroundColor: const Color.fromARGB(255, 32, 131, 211),
-      body: Column(
-        children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.15,
-          ),
-          SizedBox(
+      backgroundColor: Colors.transparent,
+      body: Container(
+        decoration: const BoxDecoration(
+            gradient: LinearGradient(
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+                colors: [
+              Color.fromARGB(255, 27, 132, 218),
+              Color.fromARGB(255, 57, 143, 213),
+              Color.fromARGB(255, 116, 161, 198)
+            ])),
+        child: Column(
+          children: [
+            SizedBox(
               height: MediaQuery.of(context).size.height * 0.15,
-              child: Searchbar(cityNameController, gettingLiveDataFromApiByCity,
-                  gettingLiveDataFromApiByGps)),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.5,
-            width: double.infinity,
-            child: ActualWeather(city, data, temp),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.2,
-          ),
-        ],
+            ),
+            SizedBox(
+                height: MediaQuery.of(context).size.height * 0.15,
+                child: Searchbar(cityNameController,
+                    gettingLiveDataFromApiByCity, gettingLiveDataFromApiByGps)),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.5,
+              width: double.infinity,
+              child: ActualWeather(city, data, temp),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.height * 0.2,
+            ),
+          ],
+        ),
       ),
     );
   }
