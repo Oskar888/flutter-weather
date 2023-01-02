@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import './SearchBar.dart';
 
 class ActualWeather extends StatelessWidget {
   String? currentAddress;

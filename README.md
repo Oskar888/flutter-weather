@@ -6,8 +6,7 @@
 </p>
 
 ## Note
-
-This project is still under development
+This app was created with Flutter and OpenWeatherMap API.
 
 ## Getting started
  Add your OpenWeatherMap API KEY on lib/main.dart
@@ -16,5 +15,6 @@ This project is still under development
   ```
 
 ## Features
-* Using the location of the device
-* Using API for weather data(temperature data and weather icon)
+* City search based on device location or user input
+* Displaying current weather
+* Displaying weather forecast for the next days

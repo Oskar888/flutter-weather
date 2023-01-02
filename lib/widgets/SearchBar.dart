@@ -4,8 +4,10 @@ class Searchbar extends StatefulWidget {
   TextEditingController controller;
   dynamic searchOnPressed;
   Function gpsOnPressed;
+  var forecastData;
 
   Searchbar(this.controller, this.searchOnPressed, this.gpsOnPressed,
+      this.forecastData,
       {super.key});
 
   @override
@@ -49,7 +51,10 @@ class _SearchbarState extends State<Searchbar> {
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
                 IconButton(
-                    onPressed: (() => [widget.gpsOnPressed()]),
+                    onPressed: () async {
+                      await widget.gpsOnPressed();
+                      widget.forecastData();
+                    },
                     icon: const Icon(Icons.gps_fixed)),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -61,7 +66,12 @@ class _SearchbarState extends State<Searchbar> {
                           bottomRight: Radius.circular(30)),
                     ),
                   ),
-                  onPressed: isButtonActive ? widget.searchOnPressed : null,
+                  onPressed: isButtonActive
+                      ? () async {
+                          await widget.searchOnPressed();
+                          widget.forecastData();
+                        }
+                      : null,
                   child: const Text("Search"),
                 ),
                 const SizedBox(
