@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ActualWeather extends StatelessWidget {
-  String? currentAddress;
+  String currentAddress = '';
   dynamic data;
   String temp;
 
@@ -13,8 +13,10 @@ class ActualWeather extends StatelessWidget {
       children: [
         const SizedBox(height: 20),
         Text(
-            style: const TextStyle(fontSize: 40, color: Colors.white),
-            currentAddress ?? ''),
+            style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.1,
+                color: Colors.white),
+            currentAddress),
         Container(
           child: data == null
               ? const Text('')
@@ -23,8 +25,11 @@ class ActualWeather extends StatelessWidget {
                 ),
         ),
         const SizedBox(height: 20),
-        Text(style: const TextStyle(fontSize: 45, color: Colors.white), temp),
-        const SizedBox(height: 20),
+        Text(
+            style: TextStyle(
+                fontSize: MediaQuery.of(context).size.width * 0.12,
+                color: Colors.white),
+            temp),
       ],
     );
   }

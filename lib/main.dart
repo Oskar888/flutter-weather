@@ -171,14 +171,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ])),
         child: Column(children: [
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.15,
+            height: MediaQuery.of(context).size.height * 0.1,
           ),
           SizedBox(
               height: MediaQuery.of(context).size.height * 0.15,
               child: Searchbar(cityNameController, gettingLiveDataFromApiByCity,
                   gettingLiveDataFromApiByGps, gettingForcecastDataFromApi)),
           SizedBox(
-            height: MediaQuery.of(context).size.height * 0.4,
+            height: MediaQuery.of(context).size.height * 0.45,
             width: double.infinity,
             child: ActualWeather(city, data, temp),
           ),

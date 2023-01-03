@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/src/widgets/container.dart';
-import 'package:flutter/src/widgets/framework.dart';
 import 'package:intl/intl.dart';
 
 class ForecastWidget extends StatelessWidget {
@@ -33,20 +31,20 @@ class ForecastWidget extends StatelessWidget {
               child: Column(
                 children: [
                   Text(
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
                           fontWeight: FontWeight.w300),
                       dayFormat.format(parsedDay)),
                   Image.network(
                     'https://openweathermap.org/img/wn/${item['weather'][0]['icon']}@2x.png',
                     fit: BoxFit.fitWidth,
-                    width: 90,
+                    width: MediaQuery.of(context).size.width * 0.22,
                   ),
                   Text(
-                      style: const TextStyle(
+                      style: TextStyle(
                           color: Colors.white,
-                          fontSize: 20,
+                          fontSize: MediaQuery.of(context).size.width * 0.05,
                           fontWeight: FontWeight.w300),
                       '${item['main']['temp'].toStringAsFixed(0)}°C'),
                 ],
