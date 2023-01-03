@@ -1,13 +1,13 @@
 import 'dart:core';
 import 'dart:convert';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import './widgets/ActualWeather.dart';
 import './widgets/SearchBar.dart';
+import './widgets/ForecastWidget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -106,15 +106,17 @@ class _MyHomePageState extends State<MyHomePage> {
     String url =
         'https://api.openweathermap.org/data/2.5/weather?lat=${_currentPosition?.latitude}&lon=${_currentPosition?.longitude}&appid=$apiKey&units=metric';
 
-    await http
-        .get(Uri.parse(url))
-        .then((value) => data = jsonDecode(value.body));
-
-    double temperatura = data['main']['temp'];
-    setState(() {
-      temp = '${temperatura.toStringAsFixed(0)}°C';
-    });
-    city = adress;
+    var response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      data = jsonDecode(response.body);
+      double temperatura = data['main']['temp'];
+      setState(() {
+        temp = '${temperatura.toStringAsFixed(0)}°C';
+        city = adress;
+      });
+    } else {
+      print('Error gettingLiveDataFromApiByGps');
+    }
   }
 
   Future<void> gettingLiveDataFromApiByCity() async {
@@ -123,14 +125,16 @@ class _MyHomePageState extends State<MyHomePage> {
     String url =
         'https://api.openweathermap.org/data/2.5/weather?q=$city&appid=$apiKey&units=metric';
 
-    await http
-        .get(Uri.parse(url))
-        .then((value) => data = jsonDecode(value.body));
-
-    double temperatura = data['main']['temp'];
-    setState(() {
-      temp = '${temperatura.toStringAsFixed(0)}°C';
-    });
+    var response = await http.get(Uri.parse(url));
+    if (response.statusCode == 200) {
+      data = jsonDecode(response.body);
+      double temperatura = data['main']['temp'];
+      setState(() {
+        temp = '${temperatura.toStringAsFixed(0)}°C';
+      });
+    } else {
+      print('Error gettingLiveDataFromApiByCity');
+    }
   }
 
   late List forecast;
@@ -146,7 +150,7 @@ class _MyHomePageState extends State<MyHomePage> {
         forecast = forecastData['list'];
       });
     } else {
-      print('Error getting weather data');
+      print('Error gettingForcecastDataFromApi');
     }
   }
 
@@ -180,51 +184,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
           SizedBox(
               height: MediaQuery.of(context).size.height * 0.3,
-              child: forecastData == null
-                  ? const Text('')
-                  : ListView.builder(
-                      scrollDirection: Axis.horizontal,
-                      shrinkWrap: true,
-                      itemCount: forecast
-                              .where(
-                                  (item) => item['dt_txt'].contains('15:00:00'))
-                              .length -
-                          1,
-                      itemBuilder: (context, index) {
-                        var item = forecast
-                            .where(
-                                (item) => item['dt_txt'].contains('15:00:00'))
-                            .toList()[index + 1];
-                        String day = item['dt_txt'];
-                        DateTime parsedDay = DateTime.parse(day);
-                        final dayFormat = DateFormat('E');
-                        return Card(
-                          color: Colors.transparent,
-                          elevation: 0,
-                          child: Column(
-                            children: [
-                              Text(
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w300),
-                                  dayFormat.format(parsedDay)),
-                              Image.network(
-                                'https://openweathermap.org/img/wn/${item['weather'][0]['icon']}@2x.png',
-                                fit: BoxFit.fitWidth,
-                                width: 90,
-                              ),
-                              Text(
-                                  style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w300),
-                                  '${item['main']['temp'].toStringAsFixed(0)}°C'),
-                            ],
-                          ),
-                        );
-                      },
-                    ))
+              width: double.infinity,
+              child: forecastData != null
+                  ? ForecastWidget(forecastData, forecast)
+                  : const Text(''))
         ]),
       ),
     );
