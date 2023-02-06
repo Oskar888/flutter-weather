@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class ActualWeather extends StatelessWidget {
-  String currentAddress = '';
-  dynamic data;
-  String temp;
+  final String currentAddress;
+  final dynamic icon;
+  final String temp;
 
-  ActualWeather(this.currentAddress, this.data, this.temp, {super.key});
+  const ActualWeather(this.currentAddress, this.icon, this.temp, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,10 +18,10 @@ class ActualWeather extends StatelessWidget {
                 color: Colors.white),
             currentAddress),
         Container(
-          child: data == null
+          child: icon == null
               ? const Text('')
               : Image.network(
-                  'https://openweathermap.org/img/wn/${data['weather'][0]['icon']}@2x.png',
+                  'https://openweathermap.org/img/wn/$icon@2x.png',
                 ),
         ),
         const SizedBox(height: 20),

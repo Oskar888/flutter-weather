@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class ForecastWidget extends StatelessWidget {
-  dynamic forecastData;
-  List forecast;
-  ForecastWidget(this.forecastData, this.forecast, {super.key});
+  final List forecast;
+  const ForecastWidget(this.forecast, {super.key});
 
   @override
   Widget build(BuildContext context) {

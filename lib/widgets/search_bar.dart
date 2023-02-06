@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
 class Searchbar extends StatefulWidget {
-  TextEditingController controller;
-  dynamic searchOnPressed;
-  Function gpsOnPressed;
-  var forecastData;
+  final TextEditingController controller;
+  final dynamic searchByCity;
+  final Function searchByGps;
+  final dynamic forecastData;
 
-  Searchbar(this.controller, this.searchOnPressed, this.gpsOnPressed,
-      this.forecastData,
+  const Searchbar(
+      this.controller, this.searchByCity, this.searchByGps, this.forecastData,
       {super.key});
 
   @override
@@ -52,7 +52,7 @@ class _SearchbarState extends State<Searchbar> {
               children: <Widget>[
                 IconButton(
                     onPressed: () async {
-                      await widget.gpsOnPressed();
+                      await widget.searchByGps();
                       widget.forecastData();
                     },
                     icon: const Icon(Icons.gps_fixed)),
@@ -68,7 +68,7 @@ class _SearchbarState extends State<Searchbar> {
                   ),
                   onPressed: isButtonActive
                       ? () async {
-                          await widget.searchOnPressed();
+                          await widget.searchByCity();
                           widget.forecastData();
                         }
                       : null,
