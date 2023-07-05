@@ -1,15 +1,14 @@
 import 'dart:convert';
 
 import 'package:bloc_example/data/data_providers/weather_data_provider.dart';
+import 'package:bloc_example/dependency_injection.dart';
 import 'package:bloc_example/models/actual_weather_model.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class WeatherManager {
-  final WeatherDataProvider _weatherDataProvider;
-
-  WeatherManager(
-    this._weatherDataProvider,
-  );
+  final WeatherDataProvider _weatherDataProvider = getIt<WeatherDataProvider>();
 
   Future<ActualWeatherModel> fetchDataByCity(String cityName) async {
     try {

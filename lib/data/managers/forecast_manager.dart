@@ -1,15 +1,14 @@
 import 'dart:convert';
 
 import 'package:bloc_example/data/data_providers/forecast_data_provider.dart';
+import 'package:bloc_example/dependency_injection.dart';
 import 'package:bloc_example/models/forecast_model.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:injectable/injectable.dart';
 
+@lazySingleton
 class ForecastManager {
-  final ForecastDataProvider _forecastDataProvider;
-
-  ForecastManager(
-    this._forecastDataProvider,
-  );
+  final ForecastDataProvider _forecastDataProvider = getIt<ForecastDataProvider>();
 
   Future<ForecastModel> fetchDataByCity(String cityName) async {
     try {

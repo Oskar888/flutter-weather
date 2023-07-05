@@ -1,3 +1,6 @@
+import 'dart:async';
+
+import 'package:bloc_example/dependency_injection.dart';
 import 'package:bloc_example/models/actual_weather_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:bloc_example/data/managers/forecast_manager.dart';
@@ -10,15 +13,11 @@ part 'weather_state.dart';
 part 'weather_cubit.freezed.dart';
 
 class WeatherCubit extends Cubit<WeatherState> {
-  WeatherCubit(
-    this._weatherManager,
-    this._forecastManager,
-    this._locationManager,
-  ) : super(const WeatherState.init());
+  WeatherCubit() : super(const WeatherState.init());
 
-  final WeatherManager _weatherManager;
-  final ForecastManager _forecastManager;
-  final LocationManager _locationManager;
+  final WeatherManager _weatherManager = getIt<WeatherManager>();
+  final ForecastManager _forecastManager = getIt<ForecastManager>();
+  final LocationManager _locationManager = getIt<LocationManager>();
 
   Future<void> fetchDataByCity(String cityName) async {
     emit(

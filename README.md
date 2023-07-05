@@ -9,14 +9,16 @@
 This app was created with Flutter and OpenWeatherMap API.
 
 Tools used in Flutter:
-* bloc
-* freezed
-* dio
+* Bloc
+* Freezed
+* Dio
+* Get_it
+* Injectable
 
 ## Getting started
- Add your OpenWeatherMap API KEY on lib/data/data_providers/forecast_data_provider.dart and weather_data_provider.dart
+ Add your OpenWeatherMap API KEY to lib/utils/api_key.dart
   ```dart
- 'YOUR_API_KEY';
+const apiKey = 'YOUR_API_KEY';
   ```
 
 ## Features
