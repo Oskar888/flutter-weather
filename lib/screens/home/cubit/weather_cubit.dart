@@ -8,6 +8,7 @@ import 'package:bloc_example/data/managers/location_manager.dart';
 import 'package:bloc_example/data/managers/weather_manager.dart';
 import 'package:bloc_example/models/forecast_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:geolocator/geolocator.dart';
 
 part 'weather_state.dart';
 part 'weather_cubit.freezed.dart';
@@ -43,6 +44,7 @@ class WeatherCubit extends Cubit<WeatherState> {
     );
 
     try {
+      await _checkLocationPermission();
       final position = await _locationManager.getCurrentLocation();
       final responseWeather = await _weatherManager.fetchDataByLocation(position);
       final responseForecast = await _forecastManager.fetchDataByLocation(position);
@@ -54,6 +56,28 @@ class WeatherCubit extends Cubit<WeatherState> {
       emit(
         WeatherState.error(e.toString()),
       );
+    }
+  }
+
+  Future<void> _checkLocationPermission() async {
+    bool serviceEnabled;
+    LocationPermission permission;
+
+    serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled.');
+    }
+
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permissions are denied.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied.');
     }
   }
 }

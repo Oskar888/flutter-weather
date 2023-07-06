@@ -3,6 +3,8 @@ import 'dart:convert';
 import 'package:bloc_example/data/data_providers/weather_data_provider.dart';
 import 'package:bloc_example/dependency_injection.dart';
 import 'package:bloc_example/models/actual_weather_model.dart';
+import 'package:bloc_example/models/weather_error_model.dart';
+import 'package:dio/dio.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:injectable/injectable.dart';
 
@@ -17,8 +19,14 @@ class WeatherManager {
 
       final data = ActualWeatherModel.fromJson(responseData);
       return data;
-    } catch (e) {
-      throw Exception(e);
+    } on DioException catch (e) {
+      if (e.response != null) {
+        final errorResponseData = json.decode(e.response.toString());
+        final errorData = WeatherErrorModel.fromJson(errorResponseData);
+        throw Exception(errorData.message);
+      } else {
+        throw Exception(e.toString());
+      }
     }
   }
 
@@ -29,8 +37,14 @@ class WeatherManager {
 
       final data = ActualWeatherModel.fromJson(responseData);
       return data;
-    } catch (e) {
-      throw Exception(e);
+    } on DioException catch (e) {
+      if (e.response != null) {
+        final errorResponseData = json.decode(e.response.toString());
+        final errorData = WeatherErrorModel.fromJson(errorResponseData);
+        throw Exception(errorData.message);
+      } else {
+        throw Exception(e.toString());
+      }
     }
   }
 }
